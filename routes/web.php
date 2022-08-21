@@ -37,6 +37,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/edit-book/{id}', [App\Http\Controllers\BookController::class, 'editBookUser'])->middleware('role:user')->name('editBook');
     Route::put('/update-book/{id}', [App\Http\Controllers\BookController::class, 'updateBookUser'])->middleware('role:user')->name('updateBook');
     Route::delete('/delete-book/{id}', [App\Http\Controllers\BookController::class, 'deleteBookUser'])->middleware('role:user')->name('deleteBook');
+    Route::put('/survey-book', [App\Http\Controllers\BookController::class, 'surveyBook'])->middleware('role:user')->name('surveyBook');
 
     Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 });

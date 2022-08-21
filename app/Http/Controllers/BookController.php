@@ -47,13 +47,12 @@ class BookController extends Controller
                     ->addColumn('action', function ($row) {
 
                         $btn = '<a data-id="' . $row->id . '" class="edit btn btn-primary me-2">Edit</a>';
-                        $btn = $btn . '<a data-id="' . $row->id . '" class="btndelete btn btn-danger btn-sm">Delete</a>';
-
-                        return $btn;
+                        $btn .= '<a data-id="' . $row->id . '" class="btndelete btn btn-danger btn-sm">Delete</a>';
 
                         return $btn;
                     })
-                    ->rawColumns(['action'])
+                    ->addColumn('checkbox', '<input type="checkbox" name="checkbox[]" value="{{$id}}" class="checkbox">')
+                    ->rawColumns(['action', 'checkbox'])
                     ->make(true);
             }
         }
@@ -206,8 +205,18 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function surveyBook(Request $request)
     {
-        //
+        $book_id = $request->book_id;
+        foreach ($book_id as $key => $value) {
+            $book = Book::find($value);
+            $book->status = 1;
+            $book->update();
+        }
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Book is successfully updated'
+        ]);
     }
 }

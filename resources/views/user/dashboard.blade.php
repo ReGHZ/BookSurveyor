@@ -14,7 +14,7 @@
                 <div id="success_message"></div>
                 <div class="card">
                     <div class="card-body">
-                        <table class="table" id="table1">
+                        <table class="table table-striped table-bordered" id="table1">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -22,7 +22,9 @@
                                     <th>Book Code</th>
                                     <th>Book Author</th>
                                     <th>Description</th>
+                                    <th>status</th>
                                     <th>Action</th>
+                                    <th><button class="btn btn-success survey">survey</button></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -74,8 +76,18 @@
                         name: 'description'
                     },
                     {
+                        data: 'status',
+                        name: 'status'
+                    },
+                    {
                         data: 'action',
                         name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'checkbox',
+                        name: 'checkbox',
                         orderable: false,
                         searchable: false
                     },
@@ -113,7 +125,10 @@
                             $('#success_message').addClass('alert alert-success');
                             $('#success_message').html(response.message);
                             $('#storeBook').modal('hide');
+                            let user_id = $('input[name=user_id]').val();
                             $('#storeBook').find('input').val("");
+                            $('#storeBook').find('textarea').val("");
+                            $('input[name=user_id]').val(user_id)
                             table.draw();
 
                         }
@@ -224,6 +239,45 @@
                     }
                 });
 
+            });
+
+            $(document).on('click', '.survey', function(e) {
+                var book_id = [];
+                if (confirm("Are you sure want to survey this book?")) {
+                    $('.checkbox:checked').each(function() {
+                        book_id.push($(this).val());
+                    });
+
+                    if (book_id.length > 0) {
+                        $.ajax({
+                            type: "PUT",
+                            url: "{{ url('/survey-book') }}",
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            data: {
+                                book_id
+                            },
+                            dataType: "json",
+                            success: function(response) {
+                                console.log(response);
+                                if (response.status == 400) {
+                                    $('#success_message').html('');
+                                    $('#success_message').addClass('alert alert-danger');
+                                    $('#success_message').text(response.message);
+                                } else {
+                                    $('#success_message').html('');
+                                    $('#success_message').addClass('alert alert-success');
+                                    $('#success_message').text(response.message);
+                                    table.draw();
+                                }
+
+                            }
+                        });
+                    } else {
+                        alert('Please select atleast one book');
+                    }
+                }
             });
         });
     </script>
